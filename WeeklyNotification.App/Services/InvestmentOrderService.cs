@@ -10,7 +10,7 @@ namespace WeeklyNotification.App.Services
 {
     public interface IInvestmentOrderService<T> where T : class, IInvestmentOrder
     {
-        Task<List<CustomerInvestementInfo>> GetInterests();
+        Task<List<CustomerInvestmentInfo>> GetInvestmentInfos();
     }
 
     public class InvestmentOrderService<T> : IInvestmentOrderService<T> where T : class, IInvestmentOrder
@@ -22,11 +22,11 @@ namespace WeeklyNotification.App.Services
             _repository = repository;
         }
 
-        public async Task<List<CustomerInvestementInfo>> GetInterests()
+        public async Task<List<CustomerInvestmentInfo>> GetInvestmentInfos()
         {
             var orders = await _repository.GetAll().Include(o => o.Customer).Where(x => x.Status == "Complete")
                 .ToArrayAsync();
-            List<CustomerInvestementInfo> customerInterests = new List<CustomerInvestementInfo>();
+            List<CustomerInvestmentInfo> customerInterests = new List<CustomerInvestmentInfo>();
 
             foreach (var customerInvestments in orders.GroupBy(g => g.Customer))
             {
@@ -63,7 +63,7 @@ namespace WeeklyNotification.App.Services
 
                 if (depositsNPV - withdrawsNPV >= 0)
                 {
-                    customerInterests.Add(new CustomerInvestementInfo
+                    customerInterests.Add(new CustomerInvestmentInfo
                     {
                         Customer = customerInvestments.Key,
                         Amount = depositOrdersSummary - withdrawalOrdersSummary,

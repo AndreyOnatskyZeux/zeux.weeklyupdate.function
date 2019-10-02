@@ -2,7 +2,7 @@
 
 namespace WeeklyNotification.App.Models
 {
-    public class CustomerInvestementInfo
+    public class CustomerInvestmentInfo
     {
         public Customer Customer { get; set; }
         public decimal Amount { get; set; }

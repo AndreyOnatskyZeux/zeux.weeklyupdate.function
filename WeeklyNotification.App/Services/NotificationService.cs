@@ -13,7 +13,7 @@ namespace WeeklyNotification.App.Services
 {
     public interface INotificationService
     {
-        Task SendNotifications(IEnumerable<CustomerInvestementInfo> infos);
+        Task SendNotifications(IEnumerable<CustomerInvestmentInfo> infos);
     }
 
     public class NotificationService : INotificationService
@@ -32,7 +32,7 @@ namespace WeeklyNotification.App.Services
             _logger = logger;
         }
 
-        public async Task SendNotifications(IEnumerable<CustomerInvestementInfo> infos)
+        public async Task SendNotifications(IEnumerable<CustomerInvestmentInfo> infos)
         {
             _logger.LogInformation($"Sending {infos.Count()} weekly notifications");
             var notificationMessages = infos.Select(i => new NotificationMessage()
@@ -88,7 +88,7 @@ namespace WeeklyNotification.App.Services
                 .ToList();
         }
 
-        private static MessageContent GetMessageContent(CustomerInvestementInfo info)
+        private static MessageContent GetMessageContent(CustomerInvestmentInfo info)
         {
             return new MessageContent()
             {

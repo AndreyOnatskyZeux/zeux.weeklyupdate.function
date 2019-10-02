@@ -16,7 +16,7 @@ namespace WeeklyNotification.App
         public static IServiceProvider ServiceProvider = Bootstrap.ConfigureServices();
 
         [FunctionName("WeeklyNotificationFunction")]
-        public static async Task Run([TimerTrigger("0 */1 * * * *"
+        public static async Task Run([TimerTrigger("0 0 12 * * THU"
 #if DEBUG
                 , RunOnStartup = true
 #endif
@@ -26,15 +26,15 @@ namespace WeeklyNotification.App
             try
             {
                 log.LogInformation($"Weekly notification sending start: {DateTime.UtcNow}");
-                var interests = new List<CustomerInvestementInfo>();
-                interests.AddRange(await ServiceProvider.GetService<IInvestmentOrderService<FiatInvestmentOrder>>()
-                    .GetInterests());
+                var interests = new List<CustomerInvestmentInfo>();
+                interests.AddRange(await ServiceProvider.GetService<IInvestmentOrderService<FiatDepositInvestmentOrder>>()
+                    .GetInvestmentInfos());
                 interests.AddRange(await ServiceProvider.GetService<IInvestmentOrderService<FiatFundInvestmentOrder>>()
-                    .GetInterests());
+                    .GetInvestmentInfos());
                 interests.AddRange(await ServiceProvider
-                    .GetService<IInvestmentOrderService<CryptoFundInvestmentOrder>>().GetInterests());
+                    .GetService<IInvestmentOrderService<CryptoFundInvestmentOrder>>().GetInvestmentInfos());
                 interests.AddRange(await ServiceProvider.GetService<IInvestmentOrderService<FiatFundInvestmentOrder>>()
-                    .GetInterests());
+                    .GetInvestmentInfos());
                 var notificationService = ServiceProvider.GetService<INotificationService>();
                 await notificationService.SendNotifications(interests);
                 

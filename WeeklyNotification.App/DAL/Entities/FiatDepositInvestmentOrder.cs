@@ -5,7 +5,7 @@ using WeeklyNotification.App.DAL.Contracts;
 namespace WeeklyNotification.App.DAL.Entities
 {
     [Table("FiatDepositInvestmentOrder")]
-    public class FiatInvestmentOrder : InvestmentOrderBase, IInvestmentOrder
+    public class FiatDepositInvestmentOrder : InvestmentOrderBase, IInvestmentOrder
     {
         public int DepositProductId { get; set; }
         public int? TransactionId { get; set; }

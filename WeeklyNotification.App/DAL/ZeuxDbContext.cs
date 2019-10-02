@@ -8,8 +8,8 @@ namespace WeeklyNotification.App.DAL
     {
         public ZeuxDbContext(DbContextOptions<ZeuxDbContext> options) : base(options) { }
         public DbSet<CustomerMessage> CustomerMessages { get; set; }
-        public DbSet<FiatInvestmentOrder> FiatDepositInvestmentOrders { get; set; }
-        public DbSet<CryptoInvestmentOrder> CryptoDepositInvestmentOrders { get; set; }
+        public DbSet<FiatDepositInvestmentOrder> FiatDepositInvestmentOrders { get; set; }
+        public DbSet<CryptoDepositInvestmentOrder> CryptoDepositInvestmentOrders { get; set; }
         public DbSet<FiatFundInvestmentOrder> FiatFundInvestmentOrders { get; set; }
         public DbSet<CryptoFundInvestmentOrder> CryptoFundInvestmentOrders { get; set; }
     }

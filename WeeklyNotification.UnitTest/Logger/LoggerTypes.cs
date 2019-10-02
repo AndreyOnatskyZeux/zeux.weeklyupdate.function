@@ -1,4 +1,4 @@
-﻿namespace CryptoExchangeRate.UnitTest.Logger
+﻿﻿namespace CryptoExchangeRate.UnitTest.Logger
 {
     public enum LoggerTypes
     {
