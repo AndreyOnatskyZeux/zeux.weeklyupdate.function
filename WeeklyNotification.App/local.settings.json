@@ -1,0 +1,22 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "WEBSITE_SLOT_NAME": "Production",
+    "FUNCTIONS_EXTENSION_VERSION": "~2",
+    "ScmType": "None",
+    "WEBSITE_AUTH_ENABLED": "False",
+    "FUNCTION_APP_EDIT_MODE": "readonly",
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "c1ee5cc5-0a6f-4b06-8678-4e33ed68b6f5",
+    "AzureWebJobsDashboard": "DefaultEndpointsProtocol=https;AccountName=testzeuxstorage;AccountKey=61dmEP0kHwz3OUoO2tPdND5tLphayirS21WtsjcS90tjse+NR5qgn0vPa2Fyn7najItwk2MW0mgnnJpaXgjhiw==",
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "DefaultEndpointsProtocol=https;AccountName=testzeuxstorage;AccountKey=61dmEP0kHwz3OUoO2tPdND5tLphayirS21WtsjcS90tjse+NR5qgn0vPa2Fyn7najItwk2MW0mgnnJpaXgjhiw==",
+    "WEBSITE_CONTENTSHARE": "test-zeuxcryptoexchangerate",
+    "WEBSITE_SITE_NAME": "test-zeuxcryptoexchangerate",
+    "AzureNotificationHub_ServiceBusConnectionString": "Endpoint=sb://test-zeuxpushnotificationqueue.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=gI7laR026rVeNJ5h8+CXrdhDQMbWeoGGUFLHLTnruJs=",
+    "AzureNotificationHub_QueueName": "push-notifications",
+    "Zeux_ApiKey": "sNASKR8ohcZFZrxY3CJ674JBJWKRQwKo",
+    "ZeuxApi_RequestDelay": "100",
+    "Zeux_ApiBaseAddress": "https://test-zeuxapi.azurewebsites.net/",
+    "ConnectionString": "Server=tcp:zeux.database.windows.net,1433;Initial Catalog=zeux-dev;Persist Security Info=False;User ID=zeuxadmin;Password=Uj6$hE3qLu&R{8;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=testzeuxstorage;AccountKey=61dmEP0kHwz3OUoO2tPdND5tLphayirS21WtsjcS90tjse+NR5qgn0vPa2Fyn7najItwk2MW0mgnnJpaXgjhiw=="
+  }
+}
