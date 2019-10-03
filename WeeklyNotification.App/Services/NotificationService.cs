@@ -50,26 +50,13 @@ namespace WeeklyNotification.App.Services
 
             var batchSize = 500;
             var batches = GetChunked(notificationMessages.ToList(), batchSize);
-            var failedAttempts = 0;
 
             foreach (var batch in batches)
             {
-                try
-                {
+               
                     await _notificationHubProvider.SendPushNotifications(batch);
                     await _zeuxProvider.SendInAppNotifications(batch);
                     await SaveMessages(batch);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError($"Sending notification failed, Exception {e}");
-                    failedAttempts += 1;
-                }
-            }
-
-            if (failedAttempts > 0)
-            {
-                _logger.LogError($"{failedAttempts} out of {batches.Count()} sending notification attempts failed.");
             }
         }
 
@@ -98,7 +85,7 @@ namespace WeeklyNotification.App.Services
             return new MessageContent()
             {
                 Title =
-                    $"You've earned £{Math.Round(info.InterestEarned, 3).ToString("N3", CultureInfo.InvariantCulture)} interest so far.",
+                    $"You've earned £{Math.Round(info.InterestEarned, 3).ToString("N3", CultureInfo.InvariantCulture)} interest so far",
                 Body = info.Amount + info.InterestEarned >= 1000
                     ? "Don't leave your friends behind"
                     : "Deposit more to earn more"
