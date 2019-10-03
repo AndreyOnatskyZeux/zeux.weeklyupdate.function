@@ -53,7 +53,7 @@ namespace WeeklyNotification.App.Services
                 {
                     await _notificationHubProvider.SendPushNotifications(batch);
                     await _zeuxProvider.SendInAppNotifications(batch);
-                    SaveMessages(batch);
+                    await SaveMessages(batch);
                 }
                 catch (Exception e)
                 {
@@ -68,9 +68,9 @@ namespace WeeklyNotification.App.Services
             }
         }
 
-        private void SaveMessages(IEnumerable<NotificationMessage> notifications)
+        private async Task SaveMessages(IEnumerable<NotificationMessage> notifications)
         {
-            _customerMessageRepository.BulkInsert(notifications.Select(n => new CustomerMessage()
+            await _customerMessageRepository.BulkInsert(notifications.Select(n => new CustomerMessage()
             {
                 Customer = n.CustomerId,
                 Title = n.Message.Title,
