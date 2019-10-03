@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Microsoft.Extensions.Logging;
 using WeeklyNotification.App.DAL.Contracts;
 using WeeklyNotification.App.DAL.Repositories;
 using WeeklyNotification.App.ServiceProviders;
@@ -20,9 +21,12 @@ namespace WeeklyNotification.App
 				.AddScoped(typeof(IRepository<>), typeof(Repository<>))
 				.AddScoped(typeof(IZeuxProvider), typeof(ZeuxProvider))
 				.AddScoped(typeof(INotificationHubProvider), typeof(NotificationHubProvider))
+				.AddScoped(typeof(IFundInvestmentOrderService<>), typeof(FundInvestmentOrderService<>))
+				.AddScoped(typeof(IDepositInvestmentOrderService<>), typeof(DepositInvestmentOrderService<>))
 				.AddScoped(typeof(INotificationService), typeof(NotificationService))
-				.AddScoped(typeof(IInvestmentOrderService<>), typeof(InvestmentOrderService<>));
-			services.AddLogging();
+				.AddScoped(typeof(ICustomerInvestmentCalculationService), typeof(CustomerInvestmentCalculationCalculationService))
+				.AddScoped(typeof(ILogger<>), typeof(Logger<>))
+				.AddLogging();
 			return services.BuildServiceProvider();
 		}
 	}

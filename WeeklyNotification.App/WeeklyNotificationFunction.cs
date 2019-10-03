@@ -26,17 +26,18 @@ namespace WeeklyNotification.App
             try
             {
                 log.LogInformation($"Weekly notification sending start: {DateTime.UtcNow}");
-                var interests = new List<CustomerInvestmentInfo>();
-                interests.AddRange(await ServiceProvider.GetService<IInvestmentOrderService<FiatDepositInvestmentOrder>>()
-                    .GetInvestmentInfos());
-                interests.AddRange(await ServiceProvider.GetService<IInvestmentOrderService<FiatFundInvestmentOrder>>()
-                    .GetInvestmentInfos());
-                interests.AddRange(await ServiceProvider
-                    .GetService<IInvestmentOrderService<CryptoFundInvestmentOrder>>().GetInvestmentInfos());
-                interests.AddRange(await ServiceProvider.GetService<IInvestmentOrderService<FiatFundInvestmentOrder>>()
-                    .GetInvestmentInfos());
+                var orderModels = new List<InvestmentOrderModel>();
+                orderModels.AddRange(await ServiceProvider.GetService<IFundInvestmentOrderService<CryptoFundInvestmentOrder>>()
+                    .GetInvestmentOrderModels());
+                orderModels.AddRange(await ServiceProvider.GetService<IFundInvestmentOrderService<FiatFundInvestmentOrder>>()
+                    .GetInvestmentOrderModels());
+                orderModels.AddRange(await ServiceProvider.GetService<IDepositInvestmentOrderService<CryptoDepositInvestmentOrder>>()
+                    .GetInvestmentOrderModels());
+                orderModels.AddRange(await ServiceProvider.GetService<IDepositInvestmentOrderService<FiatDepositInvestmentOrder>>()
+                    .GetInvestmentOrderModels());
+                var calculationService = ServiceProvider.GetService<ICustomerInvestmentCalculationService>();
                 var notificationService = ServiceProvider.GetService<INotificationService>();
-                await notificationService.SendNotifications(interests);
+                await notificationService.SendNotifications(await calculationService.GetInvestmentInfos(orderModels));
                 
                 log.LogInformation($"Weekly notification sending done: {DateTime.UtcNow}");
             }

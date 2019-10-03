@@ -24,7 +24,7 @@ namespace WeeklyNotification.App.Services
         private readonly IZeuxProvider _zeuxProvider;
 
         public NotificationService(IRepository<CustomerMessage> customerMessageRepository,
-            IZeuxProvider zeuxProvider, INotificationHubProvider notificationHubProvider, ILogger logger)
+            IZeuxProvider zeuxProvider, INotificationHubProvider notificationHubProvider, ILogger<NotificationService> logger)
         {
             _customerMessageRepository = customerMessageRepository;
             _zeuxProvider = zeuxProvider;

@@ -3,7 +3,7 @@ using WeeklyNotification.App.DAL.Entities;
 
 namespace WeeklyNotification.App.DAL.Contracts
 {
-    public interface IInvestmentOrder
+    public interface IFundInvestmentOrder
     {
         int Id { get; set; }
         decimal Amount { get; set; }
@@ -13,5 +13,7 @@ namespace WeeklyNotification.App.DAL.Contracts
         int CustomerId { get; set; }
         decimal InterestRate { get; set; }
         Customer Customer { get; set; }
+        int FundProductId { get; set; }
+        FundProduct FundProduct { get; set; }
     }
 }
