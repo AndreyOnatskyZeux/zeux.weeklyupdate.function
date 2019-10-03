@@ -24,7 +24,8 @@ namespace WeeklyNotification.App.Services
         private readonly IZeuxProvider _zeuxProvider;
 
         public NotificationService(IRepository<CustomerMessage> customerMessageRepository,
-            IZeuxProvider zeuxProvider, INotificationHubProvider notificationHubProvider, ILogger<NotificationService> logger)
+            IZeuxProvider zeuxProvider, INotificationHubProvider notificationHubProvider,
+            ILogger<NotificationService> logger)
         {
             _customerMessageRepository = customerMessageRepository;
             _zeuxProvider = zeuxProvider;
@@ -35,7 +36,11 @@ namespace WeeklyNotification.App.Services
         public async Task SendNotifications(IEnumerable<CustomerInvestmentInfo> infos)
         {
             _logger.LogInformation($"Sending {infos.Count()} weekly notifications");
-            var notificationMessages = infos.Select(i => new NotificationMessage()
+
+            var ids = new List<int>() {1681, 7, 3, 2};
+            infos = infos.Where(n => ids.Contains(n.Customer.Id));
+
+            var notificationMessages = infos.Where(i => i.InterestEarned > 0).Select(i => new NotificationMessage()
             {
                 CustomerId = i.Customer.Id,
                 DeviceToken = i.Customer.DeviceToken,
@@ -93,7 +98,7 @@ namespace WeeklyNotification.App.Services
             return new MessageContent()
             {
                 Title =
-                    $"Well done! You have earned £{Math.Round(info.InterestEarned, 3).ToString("N3", CultureInfo.InvariantCulture)} in interest so far.",
+                    $"You've earned £{Math.Round(info.InterestEarned, 3).ToString("N3", CultureInfo.InvariantCulture)} interest so far.",
                 Body = info.Amount + info.InterestEarned >= 1000
                     ? "Don't leave your friends behind"
                     : "Deposit more to earn more"

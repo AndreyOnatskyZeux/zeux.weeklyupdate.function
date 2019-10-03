@@ -27,6 +27,7 @@ namespace WeeklyNotification.App.Services
             var orders = await _orderRepository.GetAll()
                 .Include(o => o.DepositProduct)
                 .Include(o => o.Customer)
+                .Where(o => o.Status == "Complete")
                 .ToListAsync();
             return orders.Select(o => new InvestmentOrderModel()
             {

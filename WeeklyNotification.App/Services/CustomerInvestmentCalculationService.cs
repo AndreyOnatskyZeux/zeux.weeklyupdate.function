@@ -29,7 +29,7 @@ namespace WeeklyNotification.App.Services
         public async Task<List<CustomerInvestmentInfo>> GetInvestmentInfos(IEnumerable<InvestmentOrderModel> orders)
         {
             var rates = await _rateRepository.GetAll().ToListAsync();
-            List<CustomerInvestmentInfo> customerInterests = new List<CustomerInvestmentInfo>();
+            List<CustomerInvestmentInfo> investmentInfos = new List<CustomerInvestmentInfo>();
 
             foreach (var customerInvestments in orders.GroupBy(g => g.Customer))
             {
@@ -38,62 +38,58 @@ namespace WeeklyNotification.App.Services
                 // Total withdraws
                 decimal withdrawalOrdersSummary = 0;
                 // Total deposits NPV
-                decimal depositsNPV = 0;
-                // Total withdraws NPV
-                decimal withdrawsNPV = 0;
+                decimal interestEarned = 0;
+
 
                 foreach (var investment in customerInvestments)
                 {
-                    int investmentDuration = (DateTime.UtcNow - investment.CreatedUtc).Days;
+                    decimal daysInvested = (DateTime.UtcNow - investment.CreatedUtc).Days;
+
+                    decimal daysCoefficient = daysInvested / 365;
+
+                    decimal rateCoefficient = 1 + investment.InterestRate;
+
+                    double investmentCoefficient = Math.Pow(
+                        x: (double) rateCoefficient,
+                        y: (double) daysCoefficient);
+
+                    decimal amountWithInterest = investment.Amount * (decimal) investmentCoefficient;
 
                     if (investment.IsDeposit)
                     {
-                        depositOrdersSummary += ConvertToGBP(investment.Amount, investment.CurrencyId);
-                        depositsNPV += ConvertToGBP(GetNPV(
-                            investment.Amount,
-                            (double)investment.InterestRate,
-                            investmentDuration),investment.CurrencyId);
+                        depositOrdersSummary += ConvertToGBP(amountWithInterest, investment.CurrencyId);
+                        interestEarned += ConvertToGBP(amountWithInterest - investment.Amount, investment.CurrencyId);
                     }
                     else
                     {
-                        withdrawalOrdersSummary += ConvertToGBP(investment.Amount, investment.CurrencyId);
-                        withdrawsNPV += ConvertToGBP(GetNPV(
-                            investment.Amount,
-                            (double)investment.InterestRate,
-                            investmentDuration), investment.CurrencyId);
+                        withdrawalOrdersSummary += ConvertToGBP(amountWithInterest, investment.CurrencyId);
+                        interestEarned -= ConvertToGBP(amountWithInterest - investment.Amount, investment.CurrencyId);
                     }
                 }
 
 
-                if (depositsNPV - withdrawsNPV >= 0)
+                if (depositOrdersSummary - withdrawalOrdersSummary >= 0)
                 {
-                    customerInterests.Add(new CustomerInvestmentInfo
+                    investmentInfos.Add(new CustomerInvestmentInfo
                     {
                         Customer = customerInvestments.Key,
                         Amount = depositOrdersSummary - withdrawalOrdersSummary,
-                        InterestEarned = Math.Round(depositsNPV - withdrawsNPV -
-                                                    (depositOrdersSummary - withdrawalOrdersSummary), 6)
+                        InterestEarned = interestEarned
                     });
                 }
             }
 
-            return customerInterests;
+            return investmentInfos;
 
             decimal ConvertToGBP(decimal value, int currencyId)
             {
                 var gbpExchangeRate = rates.FirstOrDefault(r => r.FromCurrencyId == currencyId);
                 if (gbpExchangeRate == null)
                 {
-                    gbpExchangeRate = new CryptoExchangeRate() {Rate = 1};
+                    return value;
                 }
-
-                return value * (decimal) gbpExchangeRate.Rate;
+                return Math.Floor(value * gbpExchangeRate.Rate * 100) / 100;
             }
-        }
-
-        private static decimal GetNPV(decimal amount, double interestRate, double investmentDuration)
-        {
-            return amount * (decimal)Math.Pow(1 + interestRate, (investmentDuration / 365));
         }
     }
 }
