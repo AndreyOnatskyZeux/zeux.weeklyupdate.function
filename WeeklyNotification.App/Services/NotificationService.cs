@@ -35,9 +35,6 @@ namespace WeeklyNotification.App.Services
 
         public async Task SendNotifications(IEnumerable<CustomerInvestmentInfo> infos)
         {
-            var ids = new List<int>() {1681, 7, 3, 2};
-            infos = infos.Where(n => ids.Contains(n.Customer.Id));
-            
             _logger.LogInformation($"Sending {infos.Count()} weekly notifications");
             var notificationMessages = infos.Select(i => new NotificationMessage()
             {

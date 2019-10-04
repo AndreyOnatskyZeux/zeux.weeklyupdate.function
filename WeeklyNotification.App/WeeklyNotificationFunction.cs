@@ -37,7 +37,7 @@ namespace WeeklyNotification.App
         }
         
         [FunctionName("WeeklyNotificationFunction")]
-        public async Task Run([TimerTrigger("0 0 12 * * THU"
+        public async Task Run([TimerTrigger("0 15 10 * * THU"
 #if DEBUG
                 , RunOnStartup = true
 #endif
