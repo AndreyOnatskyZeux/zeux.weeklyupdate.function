@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,9 +33,9 @@ namespace WeeklyNotification.App.Services
             foreach (var customerInvestments in orders.GroupBy(g => g.Customer))
             {
                 // Total deposits 
-                decimal depositOrdersSummary = 0;
+                decimal depositOrdersNPVSummary = 0;
                 // Total withdraws
-                decimal withdrawalOrdersSummary = 0;
+                decimal withdrawalOrdersNPVSummary = 0;
                 // Total deposits NPV
                 decimal interestEarned = 0;
 
@@ -57,23 +56,23 @@ namespace WeeklyNotification.App.Services
 
                     if (investment.IsDeposit)
                     {
-                        depositOrdersSummary += ConvertToGBP(amountWithInterest, investment.CurrencyId);
+                        depositOrdersNPVSummary += ConvertToGBP(amountWithInterest, investment.CurrencyId);
                         interestEarned += ConvertToGBP(amountWithInterest - investment.Amount, investment.CurrencyId);
                     }
                     else
                     {
-                        withdrawalOrdersSummary += ConvertToGBP(amountWithInterest, investment.CurrencyId);
+                        withdrawalOrdersNPVSummary += ConvertToGBP(amountWithInterest, investment.CurrencyId);
                         interestEarned -= ConvertToGBP(amountWithInterest - investment.Amount, investment.CurrencyId);
                     }
                 }
 
 
-                if (depositOrdersSummary - withdrawalOrdersSummary >= 0)
+                if (depositOrdersNPVSummary - withdrawalOrdersNPVSummary > 0)
                 {
                     investmentInfos.Add(new CustomerInvestmentInfo
                     {
                         Customer = customerInvestments.Key,
-                        Amount = depositOrdersSummary - withdrawalOrdersSummary,
+                        AmountNPV = depositOrdersNPVSummary - withdrawalOrdersNPVSummary,
                         InterestEarned = interestEarned
                     });
                 }

@@ -35,12 +35,11 @@ namespace WeeklyNotification.App.Services
 
         public async Task SendNotifications(IEnumerable<CustomerInvestmentInfo> infos)
         {
-            _logger.LogInformation($"Sending {infos.Count()} weekly notifications");
-
             var ids = new List<int>() {1681, 7, 3, 2};
             infos = infos.Where(n => ids.Contains(n.Customer.Id));
-
-            var notificationMessages = infos.Where(i => i.InterestEarned > 0).Select(i => new NotificationMessage()
+            
+            _logger.LogInformation($"Sending {infos.Count()} weekly notifications");
+            var notificationMessages = infos.Select(i => new NotificationMessage()
             {
                 CustomerId = i.Customer.Id,
                 DeviceToken = i.Customer.DeviceToken,
@@ -50,13 +49,25 @@ namespace WeeklyNotification.App.Services
 
             var batchSize = 500;
             var batches = GetChunked(notificationMessages.ToList(), batchSize);
-
+            int failedAttempts = 0;
             foreach (var batch in batches)
             {
-               
+                try
+                {
                     await _notificationHubProvider.SendPushNotifications(batch);
                     await _zeuxProvider.SendInAppNotifications(batch);
                     await SaveMessages(batch);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError($"Push sending failed. Ex:{e.Message}");
+                    failedAttempts++;
+                }
+            }
+
+            if (failedAttempts > 0)
+            {
+                _logger.LogWarning($"{failedAttempts} out of {batches.Count()} sending attempts failed.");
             }
         }
 
@@ -86,8 +97,8 @@ namespace WeeklyNotification.App.Services
             {
                 Title =
                     $"You've earned £{Math.Round(info.InterestEarned, 3).ToString("N3", CultureInfo.InvariantCulture)} interest so far",
-                Body = info.Amount + info.InterestEarned >= 1000
-                    ? "Don't leave your friends behind"
+                Body = info.AmountNPV + info.InterestEarned >= 1000
+                    ? "Invite your friends to earn together"
                     : "Deposit more to earn more"
             };
         }

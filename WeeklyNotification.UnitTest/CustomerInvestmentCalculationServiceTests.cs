@@ -19,11 +19,9 @@ namespace CryptoExchangeRate.UnitTest
         {
             // Arrange 
             var investmentDuration = 10;
-            var transactionId = 1;
             var customerId = 1;
             var interestRate = 0.06M;
             var amount = 100.0;
-            var provider = "Wecashe";
             var customer = new Customer()
             {
                 Id = customerId,
@@ -53,7 +51,7 @@ namespace CryptoExchangeRate.UnitTest
 
             var expected = new CustomerInvestmentInfo()
             {
-                Amount = (decimal) (2 * amount),
+                AmountNPV = (decimal) (2 * amount),
                 Customer = customer,
                 InterestEarned = interestEarned
             };
@@ -73,7 +71,7 @@ namespace CryptoExchangeRate.UnitTest
 
             // Assert
             Assert.True(result.Any());
-            Assert.Equal(expected.Amount,result.First().Amount);
+            Assert.Equal(expected.AmountNPV,result.First().AmountNPV);
             Assert.Equal(expected.InterestEarned,result.First().InterestEarned);
         }
     }
