@@ -16,7 +16,7 @@
     "Zeux_ApiKey": "sNASKR8ohcZFZrxY3CJ674JBJWKRQwKo",
     "ZeuxApi_RequestDelay": "100",
     "Zeux_ApiBaseAddress": "https://test-zeuxapi.azurewebsites.net/",
-    "ConnectionString": "Server=tcp:production-zeux.database.windows.net,1433;Initial Catalog=production-zeux;Persist Security Info=False;User ID=zeuxadmin;Password=XT10suLPf7FP;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+    "ConnectionString": "Server=tcp:zeux.database.windows.net,1433;Initial Catalog=zeux-dev;Persist Security Info=False;User ID=zeuxadmin;Password=Uj6$hE3qLu&R{8;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
     "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=testzeuxstorage;AccountKey=61dmEP0kHwz3OUoO2tPdND5tLphayirS21WtsjcS90tjse+NR5qgn0vPa2Fyn7najItwk2MW0mgnnJpaXgjhiw=="
   }
 }
