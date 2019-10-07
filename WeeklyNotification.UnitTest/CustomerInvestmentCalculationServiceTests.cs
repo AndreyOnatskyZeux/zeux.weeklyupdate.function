@@ -20,7 +20,7 @@ namespace CryptoExchangeRate.UnitTest
             //converting
             decimal Convert(decimal value, decimal? rate)
             {
-                if (rate.HasValue)
+                if (!rate.HasValue)
                 {
                     return value;
                 }
