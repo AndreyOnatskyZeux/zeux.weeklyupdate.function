@@ -17,6 +17,12 @@ namespace CryptoExchangeRate.UnitTest
         [Fact]
         public async Task Calling_GetInvestmentInfos_returns_correct_Collection()
         {
+            //converting
+            decimal Convert(decimal value, decimal rate)
+            {
+                return Math.Floor(rate * value * 100) / 100;
+            }
+            
             // Arrange 
             var investmentDuration = 10;
             var customerId = 1;
@@ -28,7 +34,7 @@ namespace CryptoExchangeRate.UnitTest
                 DeviceToken = "token",
                 DeviceType = "android"
             };
-            
+
             var orders = new List<InvestmentOrderModel>
             {
                 new InvestmentOrderModel()
@@ -45,17 +51,17 @@ namespace CryptoExchangeRate.UnitTest
             };
 
             double npv = amount * Math.Pow((1 + (double) interestRate), (double) investmentDuration / 365);
-            decimal interestEarned = (decimal)Math.Round(2*(npv - amount), 6);
+            decimal interestEarned = (decimal) Math.Round((npv - amount), 6);
 
             var repository = new Mock<IRepository<WeeklyNotification.App.DAL.Entities.CryptoExchangeRate>>();
 
             var expected = new CustomerInvestmentInfo()
             {
-                AmountNPV = (decimal) (2 * amount),
+                AmountNPV = Convert((decimal)npv, 2),
                 Customer = customer,
-                InterestEarned = interestEarned
+                InterestEarned = Convert((decimal)interestEarned, 2)
             };
-           
+
             var mock = new List<WeeklyNotification.App.DAL.Entities.CryptoExchangeRate>()
             {
                 new WeeklyNotification.App.DAL.Entities.CryptoExchangeRate()
@@ -71,8 +77,8 @@ namespace CryptoExchangeRate.UnitTest
 
             // Assert
             Assert.True(result.Any());
-            Assert.Equal(expected.AmountNPV,result.First().AmountNPV);
-            Assert.Equal(expected.InterestEarned,result.First().InterestEarned);
+            Assert.Equal(expected.AmountNPV, result.First().AmountNPV);
+            Assert.Equal(expected.InterestEarned, result.First().InterestEarned);
         }
     }
 }
