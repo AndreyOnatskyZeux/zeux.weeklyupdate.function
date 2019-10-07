@@ -18,9 +18,13 @@ namespace CryptoExchangeRate.UnitTest
         public async Task Calling_GetInvestmentInfos_returns_correct_Collection()
         {
             //converting
-            decimal Convert(decimal value, decimal rate)
+            decimal Convert(decimal value, decimal? rate)
             {
-                return Math.Floor(rate * value * 100) / 100;
+                if (rate.HasValue)
+                {
+                    return value;
+                }
+                return Math.Floor(rate.Value * value * 100) / 100;
             }
             
             // Arrange 
