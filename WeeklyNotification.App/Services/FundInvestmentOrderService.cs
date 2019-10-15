@@ -39,7 +39,8 @@ namespace WeeklyNotification.App.Services
                 CustomerId = o.CustomerId,
                 InterestRate = o.InterestRate,
                 IsDeposit = o.IsDeposit,
-                CurrencyId = o.FundProduct.Currency
+                CurrencyId = o.FundProduct.Currency,
+                ProductId = $"F_{o.FundProductId}"
             });
         }
         

@@ -34,53 +34,63 @@ namespace WeeklyNotification.App.Services
             var currencies = await _currencyRepository.GetAll().ToListAsync();
             List<CustomerInvestmentInfo> investmentInfos = new List<CustomerInvestmentInfo>();
             var todayDate = DateTime.UtcNow;
-
             foreach (var customerInvestments in orders.GroupBy(g => g.Customer))
             {
-                // Total deposits 
-                decimal depositOrdersNPVSummary = 0;
-                // Total withdraws
-                decimal withdrawalOrdersNPVSummary = 0;
-                // Total deposits NPV
-                decimal interestEarned = 0;
+                decimal interestEarnedForCustomerInGBP = 0;
 
+                decimal npvForCustomerInGBP = 0;
 
-                foreach (var investment in customerInvestments)
+                foreach (var investmentsByProduct in customerInvestments.GroupBy(ci => ci.ProductId))
                 {
-                    decimal daysInvested = GetInvestmentDays(investment.CreatedUtc, todayDate);
+                    // Total deposits 
+                    decimal depositOrdersNPVSummary = 0;
+                    // Total withdraws
+                    decimal withdrawalOrdersNPVSummary = 0;
+                    // Total deposits NPV
+                    decimal interestEarned = 0;
 
-                    decimal daysCoefficient = daysInvested / 365;
+                    int currencyId = investmentsByProduct.First().CurrencyId;
 
-                    decimal rateCoefficient = 1 + investment.InterestRate;
-
-                    double investmentCoefficient = Math.Pow(
-                        x: (double) rateCoefficient,
-                        y: (double) daysCoefficient);
-
-                    decimal amountWithInterest = investment.Amount * (decimal) investmentCoefficient;
-
-                    if (investment.IsDeposit)
+                    foreach (var investment in investmentsByProduct)
                     {
-                        depositOrdersNPVSummary += ConvertToGBP(amountWithInterest, investment.CurrencyId, false);
-                        interestEarned += ConvertToGBP(amountWithInterest - investment.Amount, investment.CurrencyId,
-                            true);
+                        decimal daysInvested = GetInvestmentDays(investment.CreatedUtc, todayDate);
+
+                        decimal daysCoefficient = daysInvested / 365;
+
+                        decimal rateCoefficient = 1 + investment.InterestRate;
+
+                        double investmentCoefficient = Math.Pow(
+                            x: (double) rateCoefficient,
+                            y: (double) daysCoefficient);
+
+                        decimal amountWithInterest = investment.Amount * (decimal) investmentCoefficient;
+
+                        if (investment.IsDeposit)
+                        {
+                            depositOrdersNPVSummary += amountWithInterest;
+                            interestEarned += amountWithInterest - investment.Amount;
+                        }
+                        else
+                        {
+                            withdrawalOrdersNPVSummary += amountWithInterest;
+                            interestEarned -= amountWithInterest - investment.Amount;
+                        }
                     }
-                    else
-                    {
-                        withdrawalOrdersNPVSummary += ConvertToGBP(amountWithInterest, investment.CurrencyId, false);
-                        interestEarned -= ConvertToGBP(amountWithInterest - investment.Amount, investment.CurrencyId,
-                            true);
-                    }
+
+                    interestEarnedForCustomerInGBP += ConvertToGBP(interestEarned, currencyId, true);
+                    npvForCustomerInGBP += ConvertToGBP(depositOrdersNPVSummary - withdrawalOrdersNPVSummary,
+                        currencyId, false);
+                    
                 }
 
 
-                if (depositOrdersNPVSummary - withdrawalOrdersNPVSummary > 0)
+                if (npvForCustomerInGBP > 0)
                 {
                     investmentInfos.Add(new CustomerInvestmentInfo
                     {
                         Customer = customerInvestments.Key,
-                        AmountNPV = depositOrdersNPVSummary - withdrawalOrdersNPVSummary,
-                        InterestEarned = interestEarned
+                        AmountNPV = npvForCustomerInGBP,
+                        InterestEarned = interestEarnedForCustomerInGBP
                     });
                 }
             }

@@ -14,5 +14,6 @@ namespace WeeklyNotification.App.Models
        public decimal InterestRate { get; set; }
        public Customer Customer { get; set; }
        public int CurrencyId { get; set; }
+       public string ProductId { get; set; }
     }
 }
