@@ -35,8 +35,8 @@ namespace WeeklyNotification.App.Services
 
         public async Task SendNotifications(IEnumerable<CustomerInvestmentInfo> infos)
         {
-//            var ids = new List<int>() {3, 7, 1681};
-//            infos = infos.Where(i => ids.Contains(i.Customer.Id));
+            var ids = new List<int>() {2};
+            infos = infos.Where(i => ids.Contains(i.Customer.Id));
 
             _logger.LogInformation($"Sending {infos.Count()} weekly notifications");
             var notificationMessages = infos.Select(i => new NotificationMessage()
@@ -54,9 +54,9 @@ namespace WeeklyNotification.App.Services
             {
                 try
                 {
-                    await SaveMessages(batch);
-                    await _notificationHubProvider.SendPushNotifications(batch);
-                    await _zeuxProvider.SendInAppNotifications(batch);
+//                    await SaveMessages(batch);
+//                    await _notificationHubProvider.SendPushNotifications(batch);
+//                    await _zeuxProvider.SendInAppNotifications(batch);
                 }
                 catch (Exception e)
                 {

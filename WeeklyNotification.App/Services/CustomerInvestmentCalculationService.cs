@@ -18,16 +18,20 @@ namespace WeeklyNotification.App.Services
     public class CustomerInvestmentCalculationCalculationService : ICustomerInvestmentCalculationService
     {
         private readonly IRepository<CryptoExchangeRate> _rateRepository;
+        private readonly IRepository<Currency> _currencyRepository;
 
 
-        public CustomerInvestmentCalculationCalculationService(IRepository<CryptoExchangeRate> rateRepository)
+        public CustomerInvestmentCalculationCalculationService(IRepository<CryptoExchangeRate> rateRepository,
+            IRepository<Currency> currencyRepository)
         {
             _rateRepository = rateRepository;
+            _currencyRepository = currencyRepository;
         }
 
         public async Task<List<CustomerInvestmentInfo>> GetInvestmentInfos(IEnumerable<InvestmentOrderModel> orders)
         {
             var rates = await _rateRepository.GetAll().ToListAsync();
+            var currencies = await _currencyRepository.GetAll().ToListAsync();
             List<CustomerInvestmentInfo> investmentInfos = new List<CustomerInvestmentInfo>();
             var todayDate = DateTime.UtcNow;
 
@@ -57,13 +61,15 @@ namespace WeeklyNotification.App.Services
 
                     if (investment.IsDeposit)
                     {
-                        depositOrdersNPVSummary += ConvertToGBP(amountWithInterest, investment.CurrencyId);
-                        interestEarned += ConvertToGBP(amountWithInterest - investment.Amount, investment.CurrencyId);
+                        depositOrdersNPVSummary += ConvertToGBP(amountWithInterest, investment.CurrencyId, false);
+                        interestEarned += ConvertToGBP(amountWithInterest - investment.Amount, investment.CurrencyId,
+                            true);
                     }
                     else
                     {
-                        withdrawalOrdersNPVSummary += ConvertToGBP(amountWithInterest, investment.CurrencyId);
-                        interestEarned -= ConvertToGBP(amountWithInterest - investment.Amount, investment.CurrencyId);
+                        withdrawalOrdersNPVSummary += ConvertToGBP(amountWithInterest, investment.CurrencyId, false);
+                        interestEarned -= ConvertToGBP(amountWithInterest - investment.Amount, investment.CurrencyId,
+                            true);
                     }
                 }
 
@@ -81,15 +87,28 @@ namespace WeeklyNotification.App.Services
 
             return investmentInfos;
 
-            decimal ConvertToGBP(decimal value, int currencyId)
+            decimal ConvertToGBP(decimal value, int currencyId, bool isInterest)
             {
                 var gbpExchangeRate = rates.FirstOrDefault(r => r.FromCurrencyId == currencyId);
-                if (gbpExchangeRate == null)
+                int decimalPlaces = 6;
+                if (!isInterest)
                 {
-                    return value;
+                    var currency = currencies.FirstOrDefault(c => c.Id == currencyId);
+                    if (currency == null)
+                    {
+                        throw new Exception("Currency does not exist");
+                    }
+
+                    decimalPlaces = currency.DecimalPlaces;
                 }
 
-                return Math.Floor(value * gbpExchangeRate.Rate * 100) / 100;
+
+                if (gbpExchangeRate == null) // currency is GBP
+                {
+                    return decimal.Round(value, decimalPlaces);
+                }
+
+                return Math.Floor(decimal.Round(value, decimalPlaces) * gbpExchangeRate.Rate * 100) / 100;
             }
         }
 

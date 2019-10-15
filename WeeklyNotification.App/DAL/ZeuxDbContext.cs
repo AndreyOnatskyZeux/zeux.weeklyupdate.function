@@ -15,5 +15,6 @@ namespace WeeklyNotification.App.DAL
         public DbSet<CryptoFundInvestmentOrder> CryptoFundInvestmentOrders { get; set; }
         public DbSet<DepositProduct> DepositProducts { get; set; }
         public DbSet<FundProduct> FundProducts { get; set; }
+        public DbSet<Currency> Currencies { get; set; }
     }
 }

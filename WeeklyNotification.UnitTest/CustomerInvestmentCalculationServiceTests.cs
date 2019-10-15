@@ -58,7 +58,8 @@ namespace CryptoExchangeRate.UnitTest
             double npv = amount * Math.Pow((1 + (double) interestRate), (double) investmentDuration / 365);
             decimal interestEarned = (decimal) Math.Round((npv - amount), 6);
 
-            var repository = new Mock<IRepository<WeeklyNotification.App.DAL.Entities.CryptoExchangeRate>>();
+            var ratesRepository = new Mock<IRepository<WeeklyNotification.App.DAL.Entities.CryptoExchangeRate>>();
+            var currencyRepository = new Mock<IRepository<Currency>>();
 
             var expected = new CustomerInvestmentInfo()
             {
@@ -67,7 +68,7 @@ namespace CryptoExchangeRate.UnitTest
                 InterestEarned = Convert((decimal) interestEarned, 2)
             };
 
-            var mock = new List<WeeklyNotification.App.DAL.Entities.CryptoExchangeRate>()
+            var ratesMock = new List<WeeklyNotification.App.DAL.Entities.CryptoExchangeRate>()
             {
                 new WeeklyNotification.App.DAL.Entities.CryptoExchangeRate()
                 {
@@ -75,8 +76,19 @@ namespace CryptoExchangeRate.UnitTest
                     Rate = 2
                 }
             }.AsQueryable().BuildMock();
-            repository.Setup(r => r.GetAll()).Returns(mock.Object);
-            var service = new CustomerInvestmentCalculationCalculationService(repository.Object);
+            
+            var currenciesMock = new List<Currency>()
+            {
+                new Currency()
+                {
+                    Id = 1,
+                    DecimalPlaces = 2
+                }
+            }.AsQueryable().BuildMock();
+            
+            ratesRepository.Setup(r => r.GetAll()).Returns(ratesMock.Object);
+            currencyRepository.Setup(r => r.GetAll()).Returns(currenciesMock.Object);
+            var service = new CustomerInvestmentCalculationCalculationService(ratesRepository.Object,currencyRepository.Object);
             // Act 
             var result = await service.GetInvestmentInfos(orders);
 
