@@ -24,9 +24,10 @@ namespace CryptoExchangeRate.UnitTest
                 {
                     return value;
                 }
+
                 return Math.Floor(rate.Value * value * 100) / 100;
             }
-            
+
             // Arrange 
             var investmentDuration = 10;
             var customerId = 1;
@@ -43,7 +44,7 @@ namespace CryptoExchangeRate.UnitTest
             {
                 new InvestmentOrderModel()
                 {
-                    CreatedUtc = DateTime.UtcNow.AddDays(-investmentDuration),
+                    CreatedUtc = DateTime.UtcNow.AddDays(-investmentDuration - 1),
                     Status = "Complete",
                     CustomerId = customerId,
                     Customer = customer,
@@ -61,9 +62,9 @@ namespace CryptoExchangeRate.UnitTest
 
             var expected = new CustomerInvestmentInfo()
             {
-                AmountNPV = Convert((decimal)npv, 2),
+                AmountNPV = Convert((decimal) npv, 2),
                 Customer = customer,
-                InterestEarned = Convert((decimal)interestEarned, 2)
+                InterestEarned = Convert((decimal) interestEarned, 2)
             };
 
             var mock = new List<WeeklyNotification.App.DAL.Entities.CryptoExchangeRate>()

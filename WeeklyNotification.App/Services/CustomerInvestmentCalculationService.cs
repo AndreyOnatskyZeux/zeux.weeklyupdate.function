@@ -29,6 +29,7 @@ namespace WeeklyNotification.App.Services
         {
             var rates = await _rateRepository.GetAll().ToListAsync();
             List<CustomerInvestmentInfo> investmentInfos = new List<CustomerInvestmentInfo>();
+            var todayDate = DateTime.UtcNow;
 
             foreach (var customerInvestments in orders.GroupBy(g => g.Customer))
             {
@@ -42,7 +43,7 @@ namespace WeeklyNotification.App.Services
 
                 foreach (var investment in customerInvestments)
                 {
-                    decimal daysInvested = (DateTime.UtcNow - investment.CreatedUtc).Days;
+                    decimal daysInvested = GetInvestmentDays(investment.CreatedUtc, todayDate);
 
                     decimal daysCoefficient = daysInvested / 365;
 
@@ -87,8 +88,15 @@ namespace WeeklyNotification.App.Services
                 {
                     return value;
                 }
+
                 return Math.Floor(value * gbpExchangeRate.Rate * 100) / 100;
             }
+        }
+
+        private static int GetInvestmentDays(DateTime firstDay, DateTime lastDay)
+        {
+            var duration = (lastDay.Date - firstDay.Date).Days - 1;
+            return Math.Max(duration, 0);
         }
     }
 }
